@@ -10,7 +10,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 public class MybatisTemplate {
 	/*
-	 * * 기존 JDBC 템플릭
+	 * * 기존 JDBC 템플릿
 	 * public static Connection getConnection() {
 	 * 		// driver.properties 파일을 읽어서
 	 * 		// 해당 DB와 접속된 Connection 객체를 생성 후 반환

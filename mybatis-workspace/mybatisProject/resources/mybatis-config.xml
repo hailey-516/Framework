@@ -34,7 +34,7 @@
 	 		<transactionManager type="JDBC" />
 	 		
 	 		<!-- 
-	 			dataSource : ConnectionPoll 사용여부, DB접속 정보 설정
+	 			dataSource : ConnectionPool 사용여부, DB접속 정보 설정
 	 				* type="POOLED|UNPOOLED"
 	 					- POOLED : ConnectionPool을 사용
 	 					- UNPOOLED : ConnectionPool 사용안함

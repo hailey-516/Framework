@@ -58,43 +58,33 @@
 					</td>
 				</tr>
 				<tr>
-					<td>전화번호</td>
-					<td>
-						<input type="tel" name="phone" placeholder="- 포함해서 입력">
-					</td>
-				</tr>
-				<tr>
 					<td>이메일</td>
 					<td>
 						<input type="email" name="email">
 					</td>
 				</tr>
+					<td>생년월일</td>
+					<td>
+						<input type="text" name="birthday">
+					</td>
+				</tr>
+				</tr>
+					<td>성별</td>
+					<td>
+						<input type="text" name="gender">
+					</td>
+				</tr>
+				<tr>
+					<td>전화번호</td>
+					<td>
+						<input type="tel" name="phone" placeholder="- 포함해서 입력">
+					</td>
+				</tr>
+
 				<tr>
 					<td>주소</td>
 					<td>
 						<input type="text" name="address">
-					</td>
-				</tr>
-				<tr>
-					<td>취미</td>
-					<td>
-						<!-- (input:checkbox[name=interest]+label)*5 -->
-						<input type="checkbox" name="interest" id="baseball" value="야구">
-						<label for="baseball">야구</label>
-
-						<input type="checkbox" name="interest" id="cartoon" value="만화">
-						<label for="cartoon">만화</label>
-
-						<input type="checkbox" name="interest" id="soccer" value="축구">
-						<label for="soccer">축구</label>
-
-						<br>
-
-						<input type="checkbox" name="interest" id="study" value="공부">
-						<label for="study">공부</label>
-
-						<input type="checkbox" name="interest" id="game" value="게임">
-						<label for="game">게임</label>
 					</td>
 				</tr>
 			</table>

@@ -64,7 +64,7 @@
 							, GENDER
 							, PHONE
 							, ADDRESS)
-				VALUES ( SEQ_UNO,NEXTVAL
+				VALUES ( SEQ_UNO.NEXTVAL
 						, #{userId}
 						, #{userPwd}
 						, #{userName}

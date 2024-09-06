@@ -161,6 +161,14 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 		    <version>1.4</version>
 		</dependency>
 		
+		<!-- Lombok(롬복) 라이브러리 -->
+		<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <version>1.18.24</version>
+		    <scope>provided</scope>
+		</dependency>
 		
 		
 	</dependencies>

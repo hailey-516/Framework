@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -19,21 +20,31 @@
     </style>
 </head>
 <body>
+	<%
+		String contextPath = request.getContextPath();
+	%>
     <div id="top-area">
         <img src="https://khedu.co.kr/resources/images/main/logo.svg" alt="kh_logo" width="150" />
         <div></div>
-        <!-- 로그인 전 보여질 화면 -->
-        <div>
-            <a href="#">회원가입</a> &nbsp;|&nbsp;
-            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</a>
-        </div>
-
-        <!-- 로그인 후 보여질 화면 -->
-        <!-- <div>
-            <label>홍길동님 환영합니다.</label> &nbsp;&nbsp;
-            <a href="">마이페이지</a>
-            <a href="">로그아웃</a>        
-        </div> -->
+        
+        <c:choose>
+	        <c:when test="${empty loginUser}">
+		        <!-- 로그인 전 보여질 화면 -->
+		        <div>
+		            <a href="#">회원가입</a> &nbsp;|&nbsp;
+		            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</a>
+		        </div>
+	        </c:when>
+		
+		<c:otherwise>
+	        <!-- 로그인 후 보여질 화면 -->
+		        <div>
+		            <label>${loginUser.userName}님 환영합니다.</label> &nbsp;&nbsp;
+		            <a href="">마이페이지</a>
+		            <a href="">로그아웃</a>  
+		        </div>
+	        </c:otherwise>
+        </c:choose>
     </div>
     <hr>
     <nav class="container text-center">
@@ -52,19 +63,19 @@
               <h1 class="modal-title fs-5">LOGIN</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form>
+            <form action="<%= contextPath %>/member/login" method="post">
                 <div class="modal-body">
                     <div class="mb-3">
                     <label for="userId" class="col-form-label">ID:</label>
-                    <input type="text" class="form-control" placeholder="Enter ID.." id="userId" />
+                    <input type="text" class="form-control" placeholder="Enter ID.." id="userId" name="userId"/>
                     </div>
                     <div class="mb-3">
                     <label for="userPwd" class="col-form-label">PASSWORD:</label>
-                    <input type="password" class="form-control" placeholder="Enter Password.." id="userPwd" />
+                    <input type="password" class="form-control" placeholder="Enter Password.." id="userPwd" name="userPwd" />
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="sumit" class="btn btn-primary">로그인</button>
+                    <button type="submit" class="btn btn-primary">로그인</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
                 </div>
             </form>

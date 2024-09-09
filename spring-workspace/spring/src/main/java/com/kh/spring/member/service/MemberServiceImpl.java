@@ -46,8 +46,17 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public int insertMember(Member m) {
-		// TODO Auto-generated method stub
-		return 0;
+		// 기존에... SqlSession 객체 생성 --> spring에서 처리
+		
+		// DAO 객체한테 sqlSession, 데이터 전달 => DB 작업 요청
+		int result = mDao.insertMember(sqlSession, m);
+		
+		// DML(insert) -> 트랜잭션 처리
+		// SqlSession 객체 반납(close) --> spring에서 처리
+		
+		// 결과를 리턴
+		return result;
+		
 	}
 
 	@Override

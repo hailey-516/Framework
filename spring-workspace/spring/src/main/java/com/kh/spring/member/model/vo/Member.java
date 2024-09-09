@@ -26,7 +26,10 @@ public class Member {
 	private String userName;
 	private String email;
 	private String gender;
-	private int age;
+	// 나이를 입력하지 않고 가입했을 때, null값으로 전달
+	// -> null를 숫자로 형변환할 때 무엇으로 해야 할 지 알 수 없어서 오류 발생!
+	// age를 필수 입력 요소로 받거나, String 타입으로 설정.
+	private String age;
 	private String phone;
 	private String address;
 	private Date enrollDate;

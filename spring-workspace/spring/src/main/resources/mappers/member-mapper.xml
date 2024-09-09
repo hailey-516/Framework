@@ -19,10 +19,41 @@
 	</resultMap>
 
 	<select id="loginMember" resultMap="memberResultMap">
+	<!-- 암호화 처리 전 sql문
 		SELECT *
 		FROM MEMBER
 		WHERE USER_ID = #{userId}
 				AND USER_PWD = #{userPwd}
 				AND STATUS = 'Y'
+	 -->
+	 
+	 <!-- 암호화 처리 후 sql문 -->
+	 	SELECT *
+		FROM MEMBER
+		WHERE USER_ID = #{userId}
+
+				AND STATUS = 'Y'
 	</select>
+	
+	<insert id="insertMember">
+		INSERT INTO MEMBER ( USER_ID
+							, USER_PWD
+							, USER_NAME
+							, EMAIL
+							, AGE
+							, PHONE
+							, ADDRESS
+							, GENDER
+							)
+					VALUES ( #{userId}
+							, #{userPwd}
+							, #{userName}
+							, #{email}
+							, #{age}
+							, #{phone}
+							, #{address}
+							, #{gender}
+							)
+
+	</insert>
 </mapper>

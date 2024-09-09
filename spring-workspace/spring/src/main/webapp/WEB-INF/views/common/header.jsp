@@ -17,12 +17,36 @@
         nav div {font-weight: bold; height: 50px; line-height: 50px; }
         nav div:hover, nav div.active { cursor: pointer;}
         nav div.active { background-color: #485ba6; color: white; }
+        
+        .outer {
+            background-color: #e7e7e7;
+            width: 80%;
+            margin: auto;
+        }
+        .inner-area {
+            border: 1px solid #000025;
+            width: 80%;
+            margin: auto;
+            padding: 5% 15%;
+            background: #e7ecf7;
+        }
     </style>
 </head>
 <body>
 	<%
 		String contextPath = request.getContextPath();
+		String alertMsg = (String)session.getAttribute("alertMsg");
 	%>
+	<c:if test="${ not empty alertMsg }">
+		<script>
+			alert("${ alertMsg }");
+		</script>
+		<c:remove var="alertMsg" scope="session"/>
+	</c:if>
+	
+	<script>
+	
+	</script>
     <div id="top-area">
         <img src="https://khedu.co.kr/resources/images/main/logo.svg" alt="kh_logo" width="150" />
         <div></div>
@@ -31,8 +55,8 @@
 	        <c:when test="${empty loginUser}">
 		        <!-- 로그인 전 보여질 화면 -->
 		        <div>
-		            <a href="#">회원가입</a> &nbsp;|&nbsp;
-		            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</a>
+		            <a href="<%= contextPath %>/member/enrollForm">회원가입</a> &nbsp;|&nbsp;
+		            <a href="<%= contextPath %>/member/login" data-bs-toggle="modal" data-bs-target="#loginModal">로그인</a>
 		        </div>
 	        </c:when>
 		
@@ -41,7 +65,7 @@
 		        <div>
 		            <label>${loginUser.userName}님 환영합니다.</label> &nbsp;&nbsp;
 		            <a href="">마이페이지</a>
-		            <a href="">로그아웃</a>  
+		            <a href="<%= contextPath %>/member/logout">로그아웃</a>  
 		        </div>
 	        </c:otherwise>
         </c:choose>
@@ -97,6 +121,10 @@
             list.forEach((menu)=>{
                 menu.classList.remove("active");
             })
+        }
+        
+        function idCheck() {
+        	$.ajax
         }
       </script>
 </body>

@@ -3,6 +3,7 @@ package com.kh.spring.member.controller;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,10 +31,12 @@ public class MemberController {
 	 */
 	
 	private final MemberService mService;
+	private final BCryptPasswordEncoder bCrypt;
 	
 	@Autowired
-	public MemberController(MemberService mService) {
+	public MemberController(MemberService mService, BCryptPasswordEncoder bCrypt) {
 		this.mService = mService;
+		this.bCrypt = bCrypt;
 	}
 	
 	
@@ -113,7 +116,9 @@ public class MemberController {
 		
 		Member loginUser = mService.loginMember(m);
 		
-		if (loginUser != null) {	// 로그인 성공
+		if (loginUser != null
+				&& bCrypt.matches(m.getUserPwd(), loginUser.getUserPwd())
+				) {	// 로그인 성공
 			// 세선 영역에 로그인 정보 저장
 			session.setAttribute("loginUser", loginUser);
 			
@@ -128,6 +133,67 @@ public class MemberController {
 			// "/WEB-INF/views/common/errorPage.jsp
 			return "common/errorPage";
 		}
+	}
+	
+	@RequestMapping("/logout")
+	public String logoutMember(HttpSession session) {
+		// 세션 영역에 로그인 데이터 제거(=> 세션 무효화)
+		session.invalidate();
+		
+		// 메인 페이지로 응답(=> url 재요청, redirect:/)
+		return "redirect:/";
+		
+	}
+	
+	@RequestMapping("/enrollForm")
+	public String enrollForm() {
+		// WEB-INF/views/member/enrollForm.jsp
+		return "member/enrollForm";
+	}
+	
+	@RequestMapping("/insert")
+	public String insertMember(Member m, HttpSession session, Model model) {
+		
+		System.out.println(m);
+		// => 한글 인코딩 처리 -> web.xml 파일에 필터를 등록하여 처리
+		// => 숫자 타입의 데이터(나이,age)가 값이 없을 경우 400 에러 발생
+		//			--> DB 처리 시 자동 형변환 되므로 정수형 -> 문자열 형변환하여 처리
+		
+		// => 비밀번호 값을 입력된 값 그대로(평문) 저장하는 것이 아니라
+		//		원래 값을 알아보기 어렵게 만든 값(암호문)으로 저장할 것임!
+		//		* Spring-security 라이브러리 추가 (pom.xml 등록)
+		//		* BcryptPasswordEncoder 클래스를 빈으로 등록 (xml 파일 사용) - spring 경로에 spring configuration으로 추가
+		//		* 추가한 파일을 서버 구동 시 pre-loading 할 수 있도록 web.xml 파일에 설정
+		
+		System.out.println("평문 --> " + m.getUserPwd());
+		
+		System.out.println("암호문 -->" + bCrypt.encode(m.getUserPwd()));
+		
+		m.setUserPwd( bCrypt.encode(m.getUserPwd()) );
+		// => Member 객체에 비밀번호 평문을 암호문으로 변경
+		
+		int result = mService.insertMember(m);
+		
+		if (result > 0) {	// 회원가입 성공 => 성공메시지 + 메인페이지 url 재요청
+			session.setAttribute("alertMsg", "회원가입에 성공했습니다.");
+			
+			return "redirect:/";
+		} else {	// 회원가입 실패 => 에러메시지 + 에러페이지 포워딩
+			model.addAttribute("errorMsg", "회원가입에 실패했습니다.");
+			
+			/* * 참고!
+			 * ModelAndView insert(ModelAndView mv)
+			 * --> Model // Request 영역에 데이터 저장
+			 * mv.addObject("errorMsg", "회원 가입 실패")
+			 * --> View // 응답 화면 관련 처리
+			 * mv.setViewName("common/errorPage");
+			 * 
+			 * return mv;
+			 */
+			
+			return "common/errorPage";
+		}
+		
 	}
 	
 }

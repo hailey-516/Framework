@@ -25,7 +25,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberDao mDao;
 	/*
 	@Autowired
-	public MemberServiceImpl(SqlSessionTemplate sqlSession, Member mDao) {
+	public MemberServiceImpl(SqlSessionTemplate sqlSession, MemberDao mDao) {
 		this.sqlSession = sqlSession;
 		this.mDao = mDao;
 	}

@@ -119,7 +119,7 @@ public class MemberController {
 		if (loginUser != null
 				&& bCrypt.matches(m.getUserPwd(), loginUser.getUserPwd())
 				) {	// 로그인 성공
-			// 세선 영역에 로그인 정보 저장
+			// 세션 영역에 로그인 정보 저장
 			session.setAttribute("loginUser", loginUser);
 			
 			// url 재요청 (메인페이지)

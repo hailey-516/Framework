@@ -25,4 +25,9 @@ public class BoardDao {
 		// 쿼리문에 전달해 줄 데이터가 없는 경우 null로
 	}
 
+	public int insertBoard(SqlSessionTemplate sqlSession, Board b) {
+		
+		return sqlSession.insert("boardMapper.insertBoard", b);
+	}
+
 }

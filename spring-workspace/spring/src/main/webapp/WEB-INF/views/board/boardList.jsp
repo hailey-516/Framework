@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList, com.kh.spring.board.model.vo.Board" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +11,7 @@
 <body>
 	<%-- header.jsp 포함 => 포함된 파일에 선언된 변수를 공유하고자 할 때 (include 지시어) --%>
 	<%@ include file="../common/header.jsp" %>
-	
+
 	    <div class="outer">
         <br><br>
         <div class="innerOuter" style="padding: 5% 10%">
@@ -18,7 +19,9 @@
             <br>
 
             <%-- 로그인 시에만 글쓰기 버튼 표시 --%>
-            <a href="" class="btn btn-secondary" style="float:right">글쓰기</a>
+            <c:if test="${ not empty loginUser }">
+            	<a href="enrollForm" class="btn btn-secondary" style="float:right">글쓰기</a>
+            </c:if>
             <br>
             
             <br>
@@ -33,7 +36,21 @@
                 </thead>
 				<% ArrayList<Board> list = (ArrayList)request.getAttribute("list"); %>
                 <tbody>
-                <% for(int i=0; i<list.size(); i++) { %>
+                
+                	<c:forEach var="b" items="${ list }">
+                		<tr>
+                			<td>${ b.boardNo }</td>
+                			<td>${ b.boardTitle }</td>
+                			<td>${ b.boardWriter }</td>
+                			<td>${ b.count }</td>
+                			<td>${ b.createDate }</td>
+                			<td>
+                				<c:if test="${ not empty b.originName }">■</c:if>
+                			</td>
+                		</tr>
+                	</c:forEach>
+                
+                <%-- <% for(int i=0; i<list.size(); i++) { %>
                 	<tr>
                 		<td><%= list.get(i).getBoardNo() %></td>
                 		<td><%= list.get(i).getBoardTitle() %></td>
@@ -46,62 +63,49 @@
                 			<td>■</td>
                 		<% } %>
                 	</tr>
-                <% } %>
-                <%--
-                    <tr>
-                        <td>5</td>
-                        <td>마지막 공지사항 제목</td>
-                        <td>admin</td>
-                        <td>10</td>
-                        <td>2024-04-01</td>
-                        <td>■</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>공지사항 제목 4</td>
-                        <td>admin</td>
-                        <td>10</td>
-                        <td>2024-03-21</td>
-                        <td>■</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>공지사항 제목 3</td>
-                        <td>admin</td>
-                        <td>30</td>
-                        <td>2024-03-07</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>공지사항 제목 2</td>
-                        <td>admin</td>
-                        <td>50</td>
-                        <td>2024-02-22</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>공지사항 제목 1</td>
-                        <td>admin</td>
-                        <td>130</td>
-                        <td>2024-01-07</td>
-                        <td></td>
-                    </tr>                      
-                     --%>                  
+                <% } %> --%>
+
                 </tbody>
             </table>
             <br>
 
             <div id="pagingArea">
                 <ul class="pagination">
-                    <li class="page-item"><a href="" class="page-link">Prev</a></li>
-                    <li class="page-item"><a href="" class="page-link">1</a></li>
-                    <li class="page-item"><a href="" class="page-link">2</a></li>
-                    <li class="page-item"><a href="" class="page-link">3</a></li>
-                    <li class="page-item"><a href="" class="page-link">4</a></li>
-                    <li class="page-item"><a href="" class="page-link">5</a></li>
-                    <li class="page-item"><a href="" class="page-link">Next</a></li>
+                
+                	<c:choose>
+                		<c:when test="${ pi.currentPage eq 1 }">
+	                    	<li class="page-item disabled">
+	                    		<a href="#" class="page-link">Prev</a>
+	                    	</li>
+                		</c:when>
+                		<c:otherwise>
+                			<li class="page-item disabled">
+	                    		<li class="page-item"><a href="list?cpage=${ pi.currentPage-1 }" class="page-link">Prev</a></li>
+	                    	</li>
+                		</c:otherwise>
+                	</c:choose>
+                    
+                    
+                    <c:forEach var="i" begin="${ pi.startPage }" end="${ pi.endPage }">
+                    
+                    	<li class="page-item">
+                    		<a href="list?cpage=${ i }" class="page-link">${ i }</a>
+                    	</li>
+                    
+                    </c:forEach>
+                    
+                    <c:choose>
+                    	<c:when test="${ pi.currentPage eq pi.maxPage }">
+                   			<li class="page-item disabled">
+                   				<a href="#" class="page-link">Next</a>
+                   			</li>
+                   		</c:when>
+                   		<c:otherwise>
+                   			<li class="page-item">
+                   				<a href="list?cpage=${ pi.currentPage + 1 }" class="page-link">Next</a>
+                   			</li>
+                   		</c:otherwise>
+                   	</c:choose>
                 </ul>
             </div>
 
@@ -125,7 +129,7 @@
         <br><br>
     </div>
 	
-	<%-- footer.jsp 포함 => 해당 페이지를 포함만 시키고자 할 때ㅔ (표준액션태그) --%>
+	<%-- footer.jsp 포함 => 해당 페이지를 포함만 시키고자 할 때 (표준액션태그) --%>
 	<jsp:include page="../common/footer.jsp" />
 </body>
 </html>

@@ -112,6 +112,55 @@ public class BoardController {
 			model.addAttribute("errorMsg", "게시글 등록 실패");
 			return "common/errorPage";
 		}
+	}
+	/*
+	 	/board/detail?bno=2
+	 */
+	@RequestMapping("/detail")
+	public String detailBoard(/*@RequestParam("bno") int boardNo*/
+								int bno, Model model) {
+		// * 해당 게시글의 조회수를 업데이트
+		int result = bService.increaseCount(bno);
+		
+		if(result > 0) {
+			// * 조회수 증가 성공 시
+			//				1) 해당 게시글 정보를 조회
+			Board b = bService.selectBoard(bno);
+			//				2) 조회된 정보를 request 영역에 저장
+			model.addAttribute("b", b);
+			//				3) 상세페이지로 응답
+			// /WEB-INF/views/board/boardDetail.jsp
+			return "board/boardDetail";
+		} else {
+			// * 조회수 증가 실패 시
+			//				1) 에러메시지를 request 영역에 저장
+			model.addAttribute("errorMsg", "조회수 증가에 실패했습니다.");
+			//				2) 에러페이지 응답
+			//	/WEB-INF/views/common/errorPage.jsp
+			return "common/errorPage.jsp";
+		}	
+	}
 	
+	@RequestMapping("/updateForm")
+	public String updateForm(int bno, Model model) {
+		// 게시글 번호(bno)에 해당하는 데이터 조회
+		Board b = bService.selectBoard(bno);
+		
+		
+		if (b != null) {
+			model.addAttribute("board", b);
+			return "board/boardUpdate";
+		} else {
+			model.addAttribute("errorMsg", "게시글을 수정할 수 없습니다.");
+			return "common/errorPage";
+		}
+	}
+	
+	@RequestMapping("update")
+	public String updateBoard(Board b, MultipartFile upfile) {
+		System.out.println(b);
+		System.out.println(upfile);
+		
+		return "";
 	}
 }

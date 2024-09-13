@@ -7,6 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <title>boardList</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
 	<%-- header.jsp 포함 => 포함된 파일에 선언된 변수를 공유하고자 할 때 (include 지시어) --%>
@@ -39,7 +40,8 @@
                 
                 	<c:forEach var="b" items="${ list }">
                 		<tr>
-                			<td>${ b.boardNo }</td>
+                			<td class="bno">${ b.boardNo }</td>
+                			<%-- <td><a href="detail>${ b.boardTitle }</a></td> --%>
                 			<td>${ b.boardTitle }</td>
                 			<td>${ b.boardWriter }</td>
                 			<td>${ b.count }</td>
@@ -128,6 +130,26 @@
         </div>
         <br><br>
     </div>
+    
+    <script>
+/*     	onload = function() {
+    		const trArr = document.querySelectAll("#boardList>tbody>tr")
+    		
+    		for(let tr of trArr) {
+    			tr.onclick(function() {
+    				location.href = 'detail';
+    			});
+    		}
+    		
+    	} */
+    	$(function() {
+    		
+    		<!-- 게시글 목록의 행을 클릭했을 때 detail 요청을 하도록 -->
+    		$("#boardList>tbody>tr").click(function() {
+    			location.href = 'detail?bno=' + $(this).children(".bno").text();
+    		});
+    	});
+    </script>
 	
 	<%-- footer.jsp 포함 => 해당 페이지를 포함만 시키고자 할 때 (표준액션태그) --%>
 	<jsp:include page="../common/footer.jsp" />

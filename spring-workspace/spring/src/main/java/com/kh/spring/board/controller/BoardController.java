@@ -12,9 +12,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.gson.Gson;
 import com.kh.spring.board.model.vo.Board;
+import com.kh.spring.board.model.vo.Reply;
 import com.kh.spring.board.service.BoardService;
 import com.kh.spring.common.model.vo.PageInfo;
 import com.kh.spring.common.template.Pagination;
@@ -73,31 +76,10 @@ public class BoardController {
 		// 첨부파일이 있는 경우 -> 전달된 파일을 서버에 저장 + Board 객체에 파일 정보를 저장
 		if (!upfile.getOriginalFilename().isEmpty()) {	// !upfile.getOriginalFileName().equals("")
 			
-			// 파일명을 변경하여 저장 // ex) 사용자가 올린 파일이 내용은 달라도 이름이 동일할 수 있기 때문에
-			// 변경 파일명 => yyyyMMddHHmmss + xxxxx(랜덤값) + .확장자
-			
-			// * 현재 날짜 시간 정보
-			String currTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-			// * 5자리 랜덤값 ( 10000 ~ 99999 )
-			int random = (int)(Math.random() * (99999-10000+1)) + 10000;
-			// * 확장자 (.txt, .java, .png, ...)
-			String orgName = upfile.getOriginalFilename();		// "test.png", "test.2024.png"
-			String ext = orgName.substring( orgName.lastIndexOf(".") );
-			
-			String chgName = currTime + random + ext;
-			
-			// 업로드할 파일을 저장할 위치의 물리적인 경로 조회
-			String path = session.getServletContext().getRealPath("/resources/uploadFiles/");
-			
-			try {
-				upfile.transferTo(new File(path + chgName));
-			} catch (IllegalStateException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			b.setOriginName(orgName);
-			b.setChangeName("resources/uploadFiles/"+ chgName);
+			// b.setOriginName(orgName);
+			b.setOriginName(upfile.getOriginalFilename());
+			// b.setChangeName("resources/uploadFiles/"+ chgName);
+			b.setChangeName("resources/uploadFiles/"+ saveFile(upfile, session));
 		}
 		
 		// DB에 게시글 정보 저장 (첨부파일 유/무 상관없이 처리)
@@ -157,10 +139,111 @@ public class BoardController {
 	}
 	
 	@RequestMapping("update")
-	public String updateBoard(Board b, MultipartFile upfile) {
+	public String updateBoard(Board b, MultipartFile upfile
+			, HttpSession session, Model model) {
 		System.out.println(b);
 		System.out.println(upfile);
+		/*
+		 * 새로 추가된 첨부파일이 있을 경우
+		 * 		=> 기존에 첨부파일이 있다면, 이전 파일은 제거(삭제)
+		 * 			새로 추가된 첨부파일은 서버에 저장
+		 * 			첨부파일의 원본명, 저장경로(변경된파일명)를 DB에 저장
+		 */
+		if(!upfile.getOriginalFilename().isEmpty()) {
+			// 기존에 첨부파일이 있다면 기존 파일 제거(삭제)
+			if (b.getOriginName() != null) {
+				new File(session.getServletContext().getRealPath(b.getChangeName()) ).delete();
+			}
+			
+			// 새로 추가된 첨부파일 서버에 저장
+			String changeName = saveFile(upfile, session);
+			
+			// DB에 저장하기 위해 Board객체에 새로 추가된 파일 정보 저장
+			b.setOriginName(upfile.getOriginalFilename());
+			b.setChangeName("resources/uploadFiles/" + changeName);
+		}
 		
-		return "";
+		// Board 객체에는 제목(boardTitle), 내용(BoardContent) 필수적으로 값이 있을 것임
+		/*
+		 * 1) 기존 첨부파일 x, 새로운 첨부파일 x
+		 * 		=> originName : null, changeName : null
+		 * 
+		 * 2) 기존 첨부파일 o, 새로운 첨부파일 x
+		 * 		=> originName : 기존 첨부파일의 원본명, changeName : 기존 첨부파일의 변경된 파일명
+		 * 
+		 * 3) 기존 첨부파일 o, 새로운 첨부파일 o
+		 * 		=> originName : 새로 추가된 첨부파일의 원본명, changeName : 새로 추가된 첨부파일의 변경된 파일정보
+		 * 
+		 * 4) 기존 첨부파일 x, 새로운 첨부파일 o
+		 * 		=> originName : 새로 추가된 첨부파일의 원본명, changeName : 새로 추가된 첨부파일의 변경된 파일정보  
+		 */
+		int result = bService.updateBoard(b);
+		
+		if(result > 0) {
+			// 수정 성공 시 해당 게시글의 상세페이지로 응답 => url 재요청 (/board/detail?bno=게시글번호)
+			return "redirect:/board/detail?bno=" + b.getBoardNo();
+		} else {
+			// 수정 실패 시 오류메시지와 함께 오류페이지로 응답
+			model.addAttribute("errorMsg", "게시글 수정 실패!");
+			return "common/errorPage";
+		}
+	}
+	
+	private String saveFile(MultipartFile upfile, HttpSession session) {
+		// 파일명을 변경하여 저장 // ex) 사용자가 올린 파일이 내용은 달라도 이름이 동일할 수 있기 때문에
+		// 변경 파일명 => yyyyMMddHHmmss + xxxxx(랜덤값) + .확장자
+		
+		// * 현재 날짜 시간 정보
+		String currTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		// * 5자리 랜덤값 ( 10000 ~ 99999 )
+		int random = (int)(Math.random() * (99999-10000+1)) + 10000;
+		// * 확장자 (.txt, .java, .png, ...)
+		String orgName = upfile.getOriginalFilename();		// "test.png", "test.2024.png"
+		String ext = orgName.substring( orgName.lastIndexOf(".") );
+		
+		String chgName = currTime + random + ext;
+		
+		// 업로드할 파일을 저장할 위치의 물리적인 경로 조회
+		String path = session.getServletContext().getRealPath("/resources/uploadFiles/");
+		
+		try {
+			upfile.transferTo(new File(path + chgName));
+		} catch (IllegalStateException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return chgName;
+	}
+	
+	@RequestMapping("/delete")		// /board/delete
+	public String deleteBoard(/*RequestParam("bno") int boardNo*/
+								int bno, Model model, HttpSession session) {
+		System.out.println(bno);
+		int result = bService.deleteBoard(bno);
+		
+		if(result > 0) {
+			// 게시글 삭제 성공 => 게시글 목록 페이지 응답 ( /board/list url 재요청 )
+			session.setAttribute("alertMsg", "게시글 삭제 성공했습니다.");
+			
+			return "redirect:/board/list";
+		} else { 
+			// 게시글 삭제 실패 => 오류 페이지 응답
+			model.addAttribute("errorMsg", "게시글 삭제 실패");
+			return "common/errorPage";
+		}
+		
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/rlist", produces="application/json;charset=UTF-8")
+	public String selectReplyList(int bno) {
+		// 어떤 게시글의 댓글 목록 조회 => ArrayList<Reply>
+		
+		ArrayList<Reply> list = bService.selectReplyList(bno);
+		
+		// 현재는 페이지를 응답하는 방식, 데이터를 응답하기 위해서는 @ResponseBody라는 어노테이션 추가 
+		return new Gson().toJson(list);
+		
 	}
 }

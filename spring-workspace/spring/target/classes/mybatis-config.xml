@@ -11,7 +11,9 @@
 	<typeAliases>
   		<typeAlias alias="Member" type="com.kh.spring.member.model.vo.Member"/>
   		<typeAlias alias="Board" type="com.kh.spring.board.model.vo.Board" />
+  		<typeAlias alias="Reply" type="com.kh.spring.board.model.vo.Reply" />
 	</typeAliases>
+	
 	
 	<!--
 		* environments, dataSource 에 작성했던 DB 연결 관련 설정

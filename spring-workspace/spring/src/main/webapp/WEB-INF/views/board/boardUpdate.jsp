@@ -23,7 +23,7 @@
             <br><br>
 
             <form id="updateForm" method="post" action="update" enctype="multipart/form-data">
-            	<input type="hidden" neme="boardNo" value="${ board.boardNo }" />
+            	<input type="hidden" name="boardNo" value="${ board.boardNo }" />
                 <table align="center" class="table">
                     <tr>
                         <th width="100"><label for="title">제목</label></th>

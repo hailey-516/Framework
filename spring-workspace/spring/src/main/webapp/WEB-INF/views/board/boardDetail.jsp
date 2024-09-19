@@ -10,6 +10,7 @@
 	    table {width:100%;}
         table * {margin:5px;}
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
     <%-- header --%>
@@ -50,6 +51,9 @@
                         		<%-- 첨부파일: 정적인 내용. 변경되는 것 없음 --%>
                         		<%-- download 속성에 원본 파일명을 작성하면 원본 파일명으로 다운로드됨 --%>
                         		
+                        		<%-- 첨부파일이 있는 경우 수정 요청 시 전달 --%>
+                        		<input type="hidden" name="originName" value="${ b.originName }" />
+                        		<input type="hidden" name="changeName" value="${ b.changeName }" />
                         	</c:when>
                         	<c:otherwise>
                         		첨부파일 없음
@@ -141,6 +145,27 @@
 
 
     </div>
+    <script>
+    	// onload
+    	$(function(){
+    		// 해당 게시글의 댓글 목록 (ajax)
+    		selectReplyList();
+    	});
+    	
+    	function selectReplyList() {
+    		$.ajax({
+    			url: "rlist",
+    			data: { bno: ${b.boardNo} },
+    			success: function(result) {
+    				console.log(result);
+    			},
+    			error: function(err) {
+    				console.log("댓글 조회 실패!");
+    				console.log(err);
+    			}
+    		});
+    	}
+    </script>
 
     <%-- footer --%>
     <jsp:include page="../common/footer.jsp" />    

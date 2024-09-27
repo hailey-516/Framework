@@ -16,11 +16,11 @@
 	</resultMap>
 	
 	<resultMap id="replyResultSet" type="Reply">
-		<result column="REPLY_NO" property="replyNo" />
 		<result column="REPLY_CONTENT" property="replyContent" />
-		<result column="REF_BNO" property="refBno" />
 		<result column="REPLY_WRITER" property="replyWriter" />
 		<result column="CREATE_DATE" property="createDate" />
+		<result column="REPLY_NO" property="replyNo" />
+		<result column="REF_BNO" property="refBno" />
 	</resultMap>
 	
 	<select id="selectListCount" resultType="_int">
@@ -98,7 +98,49 @@
 		SELECT REPLY_CONTENT
 				, REPLY_WRITER
 				, TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') "CREATE_DATE"
+				, REPLY_NO
+				, REF_BNO
 		FROM REPLY
 		WHERE REF_BNO = #{ boardNo } AND STATUS = 'Y'
+		ORDER BY REPLY_NO DESC
+	</select>
+	
+	<!-- resultType 사용할 때는 DB의 컬럼명을 모르기 때문에 필드명으로 별칭을 지어 주어야 함 -->
+	<select id="selectReplyList2" resultType="Reply">
+		SELECT REPLY_CONTENT as replyContent
+				, REPLY_WRITER as replyWriter
+				, TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') "createDate"
+				, REPLY_NO as replyNo
+				, REF_BNO as refBno
+		FROM REPLY
+		WHERE REF_BNO = #{ boardNo } AND STATUS = 'Y'
+	</select>
+	
+	<insert id="insertReply">
+		INSERT INTO REPLY (REPLY_NO
+							, REPLY_CONTENT
+							, REF_BNO
+							, REPLY_WRITER
+							)
+			VALUES ( SEQ_RNO.NEXTVAL
+					, #{replyContent}
+					, #{refBno}
+					, #{replyWriter}
+					)
+	</insert>
+	
+	<select id="selectBoardTop5" resultMap="boardResultSet">
+		SELECT *
+		FROM (SELECT BOARD_NO
+					, BOARD_TITLE
+					, BOARD_WRITER
+					, ORIGIN_NAME
+					, CHANGE_NAME
+					, COUNT
+					, TO_CHAR(CREATE_DATE, 'YYYY-MM-DD') "CREATE_DATE"
+				FROM BOARD
+				WHERE STATUS = 'Y'
+				ORDER BY COUNT DESC)
+		WHERE ROWNUM BETWEEN 1 AND 5
 	</select>
 </mapper>

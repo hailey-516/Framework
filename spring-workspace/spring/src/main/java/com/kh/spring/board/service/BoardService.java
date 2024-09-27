@@ -30,4 +30,7 @@ public interface BoardService {
 	
 	/* 댓글 등록(작성) --> (ajax), C(insert) */
 	int insertReply(Reply r); /* 댓글 관련 객체 */
+	
+	/* 게시글 top5 조회 */
+	ArrayList<Board> selectBoardTop5();
 }

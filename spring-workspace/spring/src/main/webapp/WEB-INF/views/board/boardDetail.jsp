@@ -108,40 +108,52 @@
             	}
             </script>
 
-            <table id="replyArea" class="table" align="center">
-                <thead>
-                    <tr>
-                        <th colspan="2">
-                            <textarea name="" id="content" cols="55" rows="2" class="form-control" style="resize: none;"></textarea>
-                        </th>
-                        <th style="vertical-align:middle;">
-                            <button class="btn btn-secondary">등록</button>
-                        </th>
-                    </tr>
-                    <tr>
-                        <td colspan="3">댓글 (<span id="rcount">3</span>)</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th>user02</th>
-                        <td>댓글-----내용</td>
-                        <td>2024-04-15</td>
-                    </tr>
-                    <tr>
-                        <th>user01</th>
-                        <td>ㅋㅋㅋㅋㅋㅋㅋ</td>
-                        <td>2024-04-13</td>
-                    </tr>
-                    <tr>
-                        <th>admin</th>
-                        <td>댓글테스트ㅋㅋ</td>
-                        <td>2024-04-07</td>
-                    </tr>                         
-                </tbody>
-            </table>     
-            <br><br>
-        </div>
+			<table id="replyArea" class="table" align="center">
+				<thead>
+					<%--
+                		* 로그인한 사용자만 댓글을 작성할 수 있도록
+                		=> 만약, 로그인을 하지 않았다면
+                								입력창 부분에 '로그인 후 이용 가능합니다.' 메시지를 표시하고 입력하지 못하도록
+                								[등록] 버튼을 비활성화
+                	--%>
+					<c:choose>
+						<c:when test="${ not empty loginUser }">
+							<%-- 로그인 했을 경우 --%>
+							<tr>
+								<th colspan="2"><textarea name="" id="content" cols="55"
+										rows="2" class="form-control" style="resize: none;"></textarea>
+								</th>
+								<th style="vertical-align: middle;">
+									<button class="btn btn-secondary" onclick="addReply();">등록</button>
+								</th>
+							</tr>
+						</c:when>
+
+						<c:otherwise>
+							<!-- 로그인하지 않았을 경우 -->
+							<tr>
+								<th colspan="2"><textarea name="" id="content" cols="55"
+										rows="2" class="form-control" style="resize: none;"
+										placeholder="로그인 후 이용 가능합니다." readonly></textarea></th>
+								<th style="vertical-align: middle;">
+									<button class="btn btn-secondary" disabled>등록</button>
+								</th>
+							</tr>
+
+						</c:otherwise>
+					</c:choose>
+
+					<tr>
+						<td colspan="3">댓글 (<span id="rcount">0</span>)
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+			<br> <br>
+
+		</div>
 
 
     </div>
@@ -158,12 +170,78 @@
     			data: { bno: ${b.boardNo} },
     			success: function(result) {
     				console.log(result);
+    				
+    				// 댓글 목록이 있을 경우 화면에 표시
+    				// => 댓글 목록 없을 경우 : 빈 배열
+    				// => 댓글 목록 있는 경우 : 배열에 데이터 담겨져 있음
+    				if( result != null && result.length > 0) {
+    					// length로 간단하게 확인할 수 있지만 응답 데이터가 잘못 올 수도 있기 때문에 널 체크를 하는 편
+    					let replyValue = "";
+    					for (let r of result) {
+    						replyValue += "<tr>"
+    										+ "<th>" + r.replyWriter + "</th>"
+    										+ "<td>" + r.replyContent + "</td>"
+    										+ "<td>" + r.createDate + "</td>"
+    										+ "</tr>";
+    						
+    					/*
+    					<tr>
+                        	<th>user02</th>
+                        		<td>댓글-----내용</td>
+                        		<td>2024-04-15</td>
+                    	</tr>
+    					*/
+    					}
+    					
+    					$("#replyArea tbody").html(replyValue);
+    					$("#rcount").text(result.length);
+    				}
+    				
     			},
     			error: function(err) {
     				console.log("댓글 조회 실패!");
     				console.log(err);
     			}
     		});
+    	}
+    	
+    	
+    	function addReply() {
+			<!-- 등록 버튼 클릭 시 aleart 실행 * 입력된 내용을 출력 -->
+    		// alert( $("#replyArea #content").val() );
+    		
+    		// 입력된 내용이 있을 경우 추가 요청하도록
+    		// value 값에 trim() 공백일 시 댓글 못 달게 하도록
+    		if($("#replyArea #content").val().trim().length > 0) {
+    		
+	    		// 댓글 추가 요청(ajax)
+	    		// => /spring/board/rinsert?replyContent=입력된내용&refBno=게시글번호&replyWriter=작성자
+	    		$.ajax({
+	    			url: "rinsert",		// 요청 주소
+	    			data: {				// 전달 데이터
+	    					replyContent: $("#replyArea #content").val(),
+	    					refBno: '${ b.boardNo }',
+	    					replyWriter: '${ loginUser.userId }'
+	    					},
+	    			success: function(result) {		// 요청 성공 시 (통신 성공)
+	    				console.log(result);
+	    				// 댓글 추가 성공 시, 입력창 부분을 초기화 댓글 목록 다시 조회
+	    				if(result === 'success') {
+	    					$("#replyArea #content").val("");
+	    					selectReplyList();
+	    				} else {
+	    				// 댓글 추가 실패 시, '댓글 추가에 실패했습니다.' 메시지를 출력(alert)
+	    				alert("댓글 추가에 실패했습니다.");
+	    				}
+	    			},
+	    			error: function(err) {			// 요청 실패 시 (통신 실패)
+	    				console.log("댓글 추가 요청 실패");
+	    				console.log(err);
+	    			}
+	    		});
+    		} else {
+    			alert("내용 입력 후 추가 가능합니다.");
+    		}
     	}
     </script>
 

@@ -246,4 +246,22 @@ public class BoardController {
 		return new Gson().toJson(list);
 		
 	}
+	
+	@ResponseBody
+	@RequestMapping("/rinsert")
+	public String insertReply(Reply r) {
+		// System.out.println(r);
+		int result = bService.insertReply(r);
+		return result > 0 ? "success" : "failded";
+		
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/top5", produces="application/json;charset=UTF-8")		// /board/top5
+	public String selectBoardTop5() {
+		ArrayList<Board> topList = bService.selectBoardTop5();
+		return new Gson().toJson(topList);
+	}
+	
+	
 }

@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Service;
 
+import com.kh.spring.board.model.dao.BoardDao;
 import com.kh.spring.board.model.vo.Board;
 import com.kh.spring.board.model.vo.Reply;
 import com.kh.spring.common.model.vo.PageInfo;
-import com.kh.spring.board.model.dao.BoardDao;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,10 +72,13 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public int insertReply(Reply r) {
-		// TODO Auto-generated method stub
-		return 0;
+		return bDao.insertReply(sqlSession, r);
 	}
-	
-	
+
+	@Override
+	public ArrayList<Board> selectBoardTop5() {
+		return bDao.selectBoardTop5(sqlSession);
+	}
+
 
 }

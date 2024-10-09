@@ -224,6 +224,7 @@ https://maven.apache.org/xsd/maven-4.0.0.xsd">
 			<artifactId>aspectjrt</artifactId>
 			<version>${org.aspectj-version}</version>
 		</dependency>
+		
 		<!-- aspectjweaver : aspectj에 joinpoint를 추가하기 위한 라이브러리 -->
 		<dependency>
 		    <groupId>org.aspectj</groupId>

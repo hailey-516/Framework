@@ -12,7 +12,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="weather.js"></script>
 </head>
 <body>
     <div class="container bg-dark text-light mt-5 p-5">
@@ -33,26 +32,17 @@
             <br/>
             <div class="card w-75">
                 <div class="card-body">
-                    <h5 id="after3" class="card-title">3일 후 예상 기온</h5>
+                    <h5  class="card-title">3일 후 예상 기온</h5>
                     
-                    <p class="card-text">
-	                    <span class="badge text-bg-primary">최고기온 &#8451;</span>
-	                    <span class="badge text-bg-danger">최저기온 &#8451;</span>
-                    </p>
+                    <p id="after3" class="card-text"></p>
 
-                    <h5 id="after7" class="card-title">7일 후 예상 기온</h5>
+                    <h5  class="card-title">7일 후 예상 기온</h5>
                     
-                    <p class="card-text">
-	                    <span class="badge text-bg-primary">최고기온 &#8451;</span>
-	                    <span class="badge text-bg-danger">최저기온 &#8451;</span>
-                    </p>
+                    <p id="after7" class="card-text"></p>
                     
-                    <h5 id="after10" class="card-title">10일 후 예상 기온</h5>
+                    <h5  class="card-title">10일 후 예상 기온</h5>
                     
-                    <p class="card-text">
-	                    <span class="badge text-bg-primary">최고기온 &#8451;</span>
-	                    <span class="badge text-bg-danger">최저기온 &#8451;</span>
-                    </p>
+                    <p id="after10" class="card-text"></p>
 
                 </div>
             </div>
@@ -61,35 +51,53 @@
         <script>
         	$(function() {
         		
+        	    // 현재 시간 표시
+        	    function updateCurrentTime() {
+        	        const now = new Date();
+        	        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true, timeZone: 'Asia/Seoul' };
+        	        const formattedTime = now.toLocaleString('ko-KR', options);
+        	        $('#now').text(formattedTime);
+        	    }
+
+        	    // 처음 페이지 로드 시 시간 업데이트
+        	    updateCurrentTime();
+
+        	    // 1초마다 현재 시간 업데이트
+        	    setInterval(updateCurrentTime, 1000);
+        		
+        		      
         		$("#btn1").click(function() {
         			$.ajax({
         				url: 'temp.do',
         				data: { location: $("#location").val() },
         				success: function(result) {
-        					// 응답 데이터를 화면에 표시하기	
+        					// 응답 데이터를 화면에 표시하기
         					console.log(result);
+        					const data = result.response.body.items.item;
         					
+        					let afterData3 = "<span class='badge text-bg-primary'>최고기온" + data[0].taMax3 + "&#8451;</span>"
+                            + "<span class='badge text-bg-danger'>최저기온" + data[0].taMin3 +  "&#8451;</span>"
+        					
+                            $(".card-body #after3").html(afterData3);
+                            
+        					let afterData7 = "<span class='badge text-bg-primary'>최고기온" + data[0].taMax7 + "&#8451;</span>"
+                            + "<span class='badge text-bg-danger'>최저기온" + data[0].taMin7 +  "&#8451;</span>"
+        					
+                            $(".card-body #after7").html(afterData7);
+                            
+        					let afterData10 = "<span class='badge text-bg-primary'>최고기온" + data[0].taMax10 + "&#8451;</span>"
+                            + "<span class='badge text-bg-danger'>최저기온" + data[0].taMin10 +  "&#8451;</span>"
+        					
+                            $(".card-body #after10").html(afterData10);
         				},
-        				error: funciton(err) {
+        				error: function(err) {
         					console.log(err);
         				}
         			});
         		});
         	});
         </script>
-        
-        <hr/>
-        <h5>UI 참고</h5>
-        <div class="card w-75">
-            <div class="card-body">
-                <h5 id="after3" class="card-title">예상 기온</h5>
-                
-                <p class="card-text">
-                    <span class="badge text-bg-primary">최고기온 &#8451;</span>
-                    <span class="badge text-bg-danger">최저기온 &#8451;</span>
-                </p>
-            </div>
-        </div>
+
     </div>
 </body>
 </html>

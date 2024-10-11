@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class APIController {
 	// 서비스 키
-	private final String SERVICE_KEY = "E6EEgrmIDf2HdHQwdw0Q6bKu4xOmJklT2Da4lef9XuN6x5aNM9DSw9aEzheFHN2BpZtYY4Bvs4Ur3HlpHiPxwQ%3D%3D";
+	private final String SERVICE_KEY = "서비스키";
 	
 	// air.do 요청을 받을 메소드
 	@ResponseBody	// 응답을 데이터 형태로 응답할 때(없으면 페이지 형태로 응답)
@@ -22,7 +22,7 @@ public class APIController {
 	public String airPollution(String location) throws IOException {
 		
 		// 대기오염 정보를 조회 (api 사용)
-		String url = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty"
+		String url = "서비스키"
 					+ "?serviceKey=" + SERVICE_KEY // 인코딩 안 된 것 가져오려면 URLEncoder.encode(SEVICE_KEY, "UTR-8") -> 원본 데이터(디코딩)
 					+ "&sidoName=" + URLEncoder.encode(location, "UTF-8")
 					+ "&returnType=json";

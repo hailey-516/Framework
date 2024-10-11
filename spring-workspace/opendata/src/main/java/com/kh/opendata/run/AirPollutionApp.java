@@ -21,7 +21,7 @@ public class AirPollutionApp {
         StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty"); /*URL*/
                 
         // 서비스 인증 키
-        String myKey = "E6EEgrmIDf2HdHQwdw0Q6bKu4xOmJklT2Da4lef9XuN6x5aNM9DSw9aEzheFHN2BpZtYY4Bvs4Ur3HlpHiPxwQ%3D%3D";
+        String myKey = "서비스키";
         
         // 요청 파라미터
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + myKey); /*Service Key*/

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kh.lclinic.model.mapper.CounselMapper"> <!-- mapper로 등록해 놓은 인터페이스 -->
+	<select id="selectAllCounselByUserId" resultType="Counsel">
+		select userid
+		       , title
+		       , content
+		       , to_char(create_date, 'yyyy-mm-dd') create_date
+		from counsel
+		where userid = #{id}
+	</select>
+</mapper>

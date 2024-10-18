@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class APIController {
 	// 서비스 키
-	private final String SERVICE_KEY = "E6EEgrmIDf2HdHQwdw0Q6bKu4xOmJklT2Da4lef9XuN6x5aNM9DSw9aEzheFHN2BpZtYY4Bvs4Ur3HlpHiPxwQ%3D%3D";
+	private final String SERVICE_KEY = "서비스키";
 	
 	// 대기오염 페이지 응답 메소드
 	@RequestMapping("airPollution")

@@ -34,7 +34,7 @@ public class LoggingAop {
 		log.info("args  : {}", args);
 	}
 	
-	@AfterReturning("cut()")
+	@AfterReturning(value="cut()", returning="obj")
 	public void afterReturning(JoinPoint jp, Object obj) {
 		log.info("------------------ after method ------------------");
 		log.info("method: {}", jp.getSignature());

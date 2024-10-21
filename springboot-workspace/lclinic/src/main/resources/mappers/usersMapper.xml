@@ -8,4 +8,5 @@
 			FROM USERS
 		WHERE id = #{id} AND password = #{password}
 	</select>
+	
 </mapper>

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.khEmail.service.MailService;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +43,36 @@ public class MailController {
 	@PostMapping("mail")
 	public String sendAuth(String email) {
 		log.info("* email : {}", email);
+		
+		/* 메일 전송 테스트
+		String subject = "[KH] 테스트 메일";
+		String text = "메일 내용@@@@@@";
+		String[] to = { email };
+		
+		mService.sendMail(subject, text, to);
+		*/
+		
+		try {
+			mService.sendCode(email);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return "ok";
+	}
+	
+	@PostMapping("/check")
+	public String checkCode(String email, String code) {
+		log.info("* email : {}, code : {}", email, code);
+		
+		boolean result = mService.checkCode(email, code);
+		if (result) {
+			return "success";
+		} else {
+			return "failed";
+		}
+		
 	}
 	
 }

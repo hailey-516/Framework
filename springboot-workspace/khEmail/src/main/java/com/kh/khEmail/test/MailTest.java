@@ -34,7 +34,7 @@ public class MailTest {
 		sender.setPort(587);				// - 포트
 		sender.setUsername("leehihelloworld@gmail.com");	// - 인증받은 사용자 이메일
 		sender.setPassword("앱 비밀번호");			// - 앱 비밀번호
-		s
+		
 		Properties prop = new Properties();
 		prop.put("mail.smtp.auth",  true);				// SMTP 서버 연결 시 사용자 인증 설정
 		prop.put("mail.smtp.starttls.enable", true);	// SMTP 연결 시 TLS 암호화 설정

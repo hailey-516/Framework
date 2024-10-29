@@ -1,13 +1,17 @@
 package com.kh.khEmail.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kh.khEmail.service.MailService;
 
 import jakarta.mail.MessagingException;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /*
@@ -28,6 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 // @RequiredArgsConstructor	// [1] lombok 사용 시 가능!
+// @CrossOrigin	// 모든 주소에서 오는 요청을 모두 받겠다
+@CrossOrigin(origins = "http://localhost:3000")
 public class MailController {
 	
 	private final MailService mService;
@@ -40,17 +46,39 @@ public class MailController {
 
 	// 이메일 정보를 전달받는 메소드
 	// => 중요한 정보의 경우 POST를 자주 사용
+	
+//	@PostMapping("mail")
+//	public String sendAuth(String email) {
+//		log.info("* email : {}", email);
+//		
+//		/* 메일 전송 테스트
+//		String subject = "[KH] 테스트 메일";
+//		String text = "메일 내용@@@@@@";
+//		String[] to = { email };
+//		
+//		mService.sendMail(subject, text, to);
+//		*/
+//		
+//		try {
+//			mService.sendCode(email);
+//		} catch (MessagingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//		return "ok";
+//	}
+	
 	@PostMapping("mail")
-	public String sendAuth(String email) {
+	public String sendAuth(@RequestBody Map<String, Object> request) throws Exception {
+		String email = (String)request.get("email");
+		
+		if (email == null) {
+			throw new Exception("필수 항목이 없습니다. (email)");
+		}
+		
+		
 		log.info("* email : {}", email);
-		
-		/* 메일 전송 테스트
-		String subject = "[KH] 테스트 메일";
-		String text = "메일 내용@@@@@@";
-		String[] to = { email };
-		
-		mService.sendMail(subject, text, to);
-		*/
 		
 		try {
 			mService.sendCode(email);
@@ -62,8 +90,17 @@ public class MailController {
 		return "ok";
 	}
 	
+	
 	@PostMapping("/check")
-	public String checkCode(String email, String code) {
+//	public String checkCode(String email, String code) {
+	public String checkCode(@RequestBody MailRequest request) throws Exception {
+		String email = request.getEmail();
+		String code = request.getCode();
+		
+		if (email == null || code == null) {
+			throw new Exception("필수 데이터가 전달되지 않았습니다. (email, code)");
+		}
+		
 		log.info("* email : {}, code : {}", email, code);
 		
 		boolean result = mService.checkCode(email, code);
@@ -72,7 +109,11 @@ public class MailController {
 		} else {
 			return "failed";
 		}
-		
 	}
-	
+}
+
+@Data
+class MailRequest {
+	private String email;
+	private String code;
 }

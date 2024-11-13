@@ -28,6 +28,7 @@
 	        </div>
         	<div class="input-group w-25">
 	            <select id="rows" class="form-select">
+	            	<option value="2">2건씩</option>
 	                <option value="10">10건씩</option>
 	                <option value="30">30건씩</option>
 	                <option value="50">50건씩</option>
